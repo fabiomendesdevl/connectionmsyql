@@ -1,14 +1,34 @@
 package Program;
 
 import db.DB;
+import db.DbException;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class application {
     public static void main(String[] args) {
-        Connection connection = DB.getConnection();
-        DB.closeConnection();
+        Connection connection = null;
+        Statement st = null;
+        ResultSet rs = null;
 
-        System.out.println(connection);
+        try{
+            connection = DB.getConnection();
+            st = connection.createStatement();
+            rs = st.executeQuery("select * from department");
+
+            while (rs.next()){
+                System.out.println(rs.getInt("Id") + " | " + rs.getString("Name"));
+            }
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+        finally {
+            DB.closeResultSet(rs);
+            DB.closeStatement(st);
+            DB.closeConnection();
+        }
     }
 }
