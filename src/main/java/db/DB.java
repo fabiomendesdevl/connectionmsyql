@@ -38,7 +38,7 @@ public class DB {
             props.load(fs);
             return props;
         } catch (IOException e) {
-            throw new DbException(e.getLocalizedMessage());
+            throw new DbException(e.getMessage());
         }
     }
 
