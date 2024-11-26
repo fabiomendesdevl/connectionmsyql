@@ -77,6 +77,22 @@ public class Program {
                     }
                     break;
                 case 2:
+                    try {
+                        connection = DB.getConnection();
+                        ps = connection.prepareStatement("UPDATE seller "
+                                + "SET BaseSalary = BaseSalary + ? "
+                                + "WHERE "
+                                + "(DepartmentId = ?)");
+                        ps.setDouble(1, 200);
+                        ps.setDouble(2, 2);
+
+                        int rowsAffected = ps.executeUpdate();
+
+                        System.out.println("Dados atualizados: " + rowsAffected);
+
+                    } catch (SQLException e) {
+                        throw new DbException(e.getMessage());
+                    }
                     break;
                 case 3:
                     break;
