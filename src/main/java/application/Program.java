@@ -2,6 +2,7 @@ package application;
 
 import db.DB;
 import db.DbException;
+import db.DbIntegrityException;
 
 import java.sql.*;
 import java.text.ParseException;
@@ -95,6 +96,20 @@ public class Program {
                     }
                     break;
                 case 3:
+                    try {
+                        System.out.print("Insira o id que deseja deletar: ");
+                        int id = sc.nextInt();
+                        connection = DB.getConnection();
+                        ps = connection.prepareStatement(
+                                "DELETE FROM department "
+                                        + "WHERE "
+                                        + "Id = ?");
+                        ps.setInt(1, id);
+                        int linha = ps.executeUpdate();
+                        System.out.println("Deletado com sucesso...." + linha);
+                    } catch (SQLException e) {
+                        throw new DbIntegrityException(e.getMessage());
+                    }
                     break;
                 case 4:
                     try {
