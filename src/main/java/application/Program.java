@@ -22,13 +22,14 @@ public class Program {
 
         int menu;
         do {
-        System.out.println("Menu");
-        System.out.println("1 - inserir dados de vendedor");
-        System.out.println("2 - Atualizar dados");
-        System.out.println("3 - Deletar dados");
-        System.out.println("4 - Listar dados de departamento");
-        System.out.print("Insira uma opção: ");
-        menu = sc.nextInt();
+            System.out.println("Menu");
+            System.out.println("1 - inserir dados de vendedor");
+            System.out.println("2 - Atualizar dados");
+            System.out.println("3 - Deletar dados");
+            System.out.println("4 - Listar dados de departamento");
+            System.out.println("5 - Listar dados de vendedor");
+            System.out.print("Insira uma opção: ");
+            menu = sc.nextInt();
 
             switch (menu) {
                 case 1:
@@ -47,15 +48,15 @@ public class Program {
 
                         System.out.print("Insira o salario base: ");
                         double salario = sc.nextDouble();
-                        System.out.print("Insira o departamento 1,2,3 ou 4: ") ;
+                        System.out.print("Insira o departamento 1,2,3 ou 4: ");
                         int departamento = sc.nextInt();
 
                         connection = DB.getConnection();
                         ps = connection.prepareStatement(
                                 "INSERT INTO seller"
-                                + "(Name, Email, BirthDate, BaseSalary, DepartmentId)"
-                                +"VALUES"
-                                +"(?,?,?,?,?)");
+                                        + "(Name, Email, BirthDate, BaseSalary, DepartmentId)"
+                                        + "VALUES"
+                                        + "(?,?,?,?,?)");
 
                         ps.setString(1, nome);
                         ps.setString(2, email);
@@ -63,7 +64,7 @@ public class Program {
                         ps.setDouble(4, salario);
                         ps.setInt(5, departamento);
 
-                        int rowsAffected  = ps.executeUpdate();
+                        int rowsAffected = ps.executeUpdate();
                         System.out.println("Linhas afetadas: " + rowsAffected);
 
                     } catch (SQLException e) {
@@ -90,7 +91,27 @@ public class Program {
                         }
                         System.out.println("-------------------------------------------------");
                     } catch (SQLException e) {
-                        e.printStackTrace(); //imprimir as mensagens de erros;
+                        throw new DbException(e.getMessage()); //imprimir as mensagens de erros;
+                    } finally {
+                        DB.closeResultSet(rs);
+                        DB.closeStatement(st);
+                        DB.closeConnection();
+                    }
+                    break;
+                case 5:
+                    try {
+                        connection = DB.getConnection();
+                        st = connection.createStatement();
+                        rs = st.executeQuery("select * from seller");
+                        System.out.println("-------------------------------------------------");
+                        while (rs.next()) {
+                            System.out.println(rs.getInt("Id") + " | " + rs.getString("Name") + " | "
+                                    + rs.getString("Email") + " | " + rs.getDate("BirthDate") + " | "
+                                    + rs.getDouble("BaseSalary") + " | " + rs.getInt("DepartmentId"));
+                        }
+                        System.out.println("-------------------------------------------------");
+                    } catch (SQLException e) {
+                        throw new DbException(e.getMessage()); //imprimir as mensagens de erros;
                     } finally {
                         DB.closeResultSet(rs);
                         DB.closeStatement(st);
@@ -100,6 +121,6 @@ public class Program {
                 default:
                     break;
             }
-        }while(menu != 0);
+        } while (menu != 0);
     }
 }
